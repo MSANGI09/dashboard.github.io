@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Sales Dashboard</title>
+    <style>
+        /* General Page Styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Main Container */
+        .container {
+            width: 90%;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        /* Grid Layout for Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Individual Card Styling */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #4caf50;
+        }
+
+        /* Chart Canvas */
+        canvas {
+            max-width: 100%;
+            height: 300px;
+        }
+
+        /* Filter Dropdown Styling */
+        .filters {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Footer Styling */
+        footer {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f1f1f1;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <header>
+        <h1>Interactive Sales Dashboard</h1>
+    </header>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+        <!-- Filter Section -->
+        <div class="filters">
+            <label for="timeFilter">Filter by Time Period:</label>
+            <select id="timeFilter">
+                <option value="all">All Time</option>
+                <option value="lastWeek">Last Week</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="lastYear">Last Year</option>
+            </select>
+        </div>
+
+        <!-- Grid for Charts -->
+        <div class="grid">
+            <div class="card">
+                <h3>Sales Trends</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="card">
+                <h3>Sales by Region</h3>
+                <canvas id="regionChart"></canvas>
+            </div>
+            <div class="card">
+                <h3>Top Products</h3>
+                <canvas id="productChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        Created and maintained by Msangi Jr<br>😊Karibu sana😊<br>
+        🌹
+    </footer>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize Charts with Default Data
+        const salesChart = createLineChart('salesChart', ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], [58900, 700, 8000, 1000, 1200, 1500]);
+        const regionChart = createBarChart('regionChart', ['North', 'South', 'East', 'West'], [300, 500, 700, 400]);
+        const productChart = createPieChart('productChart', ['Product A', 'Product B', 'Product C', 'Product D'], [30, 20, 25, 25]);
+
+        // Dropdown Filter Listener
+        const timeFilter = document.getElementById('timeFilter');
+        timeFilter.addEventListener('change', function () {
+            const filter = timeFilter.value;
+
+            // Simulate Data Update for Each Filter
+            if (filter === 'lastWeek') {
+                updateChartData(salesChart, ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], [100, 200, 300, 400, 500, 600, 700]);
+                updateChartData(regionChart, ['North', 'South', 'East', 'West'], [150, 200, 250, 100]);
+                updateChartData(productChart, ['Product A', 'Product B', 'Product C', 'Product D'], [40, 30, 20, 10]);
+            } else if (filter === 'lastMonth') {
+                updateChartData(salesChart, ['Week 1', 'Week 2', 'Week 3', 'Week 4'], [65400, 7008, 8700, 10000]);
+                updateChartData(regionChart, ['North', 'South', 'East', 'West'], [200, 400, 600, 300]);
+                updateChartData(productChart, ['Product A', 'Product B', 'Product C', 'Product D'], [25, 25, 30, 20]);
+            } else if (filter === 'lastYear') {
+                updateChartData(salesChart, ['Q1', 'Q2', 'Q3', 'Q4'], [1000, 12080, 1400, 16090]);
+                updateChartData(regionChart, ['North', 'South', 'East', 'West'], [5060, 7080, 900, 60990]);
+                updateChartData(productChart, ['Product A', 'Product B', 'Product C', 'Product D'], [20, 30, 25, 25]);
+            } else {
+                updateChartData(salesChart, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], [500, 700, 800, 1000, 1200, 1500]);
+                updateChartData(regionChart, ['North', 'South', 'East', 'West'], [300, 500, 700, 400]);
+                updateChartData(productChart, ['Product A', 'Product B', 'Product C', 'Product D'], [30, 20, 25, 25]);
+            }
+        });
+
+        // Chart.js Helper Functions
+        function createLineChart(canvasId, labels, data) {
+            return new Chart(document.getElementById(canvasId), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sales (Tzs)',
+                        data: data,
+                        borderColor: '#4caf50',
+                        fill: false,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        function createBarChart(canvasId, labels, data) {
+            return new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Sales (Tzs)',
+                        data: data,
+                        backgroundColor: ['#4caf50', '#8bc34a', '#cddc39', '#ffeb3b']
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        function createPieChart(canvasId, labels, data) {
+            return new Chart(document.getElementById(canvasId), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#4caf50', '#8bc34a', '#cddc39', '#ffeb3b']
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        function updateChartData(chart, labels, newData) {
+            chart.data.labels = labels; // Update X-axis labels
+            chart.data.datasets[0].data = newData; // Update Y-axis data
+            chart.update();
+        }
+    </script>
+</body>
+</html>
